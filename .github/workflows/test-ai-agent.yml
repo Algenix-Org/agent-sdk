@@ -1,4 +1,4 @@
-name: Test AI Agent Action  # This is the workflow name
+name: Test AI Agent Action
 
 on:
   push:
