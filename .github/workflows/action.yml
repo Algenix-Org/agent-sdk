@@ -1,35 +1,72 @@
-name: AI Agent Action
-description: Run an AI-powered task automation agent in your GitHub Actions workflow
-inputs:
-  task-input:
-    description: 'JSON string defining the task to execute (e.g., {"input": "Hello"})'
-    required: false
-    default: '{}'
-  task-file:
-    description: Path to a JSON file containing the task definition
-    required: false
-  openai-api-key:
-    description: OpenAI API key for AI processing
-    required: true
-  agent-name:
-    description: Name of the AI agent
-    required: false
-    default: AIAgent
-  log-level:
-    description: Logging level (DEBUG, INFO, WARNING, ERROR)
-    required: false
-    default: INFO
-outputs:
-  result:
-    description: JSON string containing the task execution result
-runs:
-  using: docker
-  image: Dockerfile
-  env:
-    OPENAI_API_KEY: ${{ inputs.openai-api-key }}
-    AGENT_NAME: ${{ inputs.agent-name }}
-    GITHUB_TOKEN: ${{ github.token }}
-    AGENT_LOG_LEVEL: ${{ inputs.log-level }}
-    TASK_INPUT: ${{ inputs.task-input }}
-    TASK_FILE: ${{ inputs.task-file }}
-    GITHUB_REPOSITORY_VISIBILITY: ${{ github.event.repository.visibility }}
+name: Test AI Agent Action
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual trigger for debugging
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4  # Updated to latest version
+
+      # Set up Python (for local testing if needed)
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      # Install dependencies for local testing
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install python-dotenv requests
+
+      # Build Docker image locally to catch build errors
+      - name: Build Docker image
+        run: |
+          docker build -t ai-agent-action .
+          docker images | grep ai-agent-action
+
+      # Run the Action with test inputs
+      - name: Run AI Agent Action
+        id: ai-agent
+        uses: ./
+        with:
+          task-input: '{"input": "Test task"}'
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          agent-name: TestAgent
+          log-level: DEBUG
+        env:
+          GITHUB_REPOSITORY_VISIBILITY: public  # Simulate public repo for free tier
+
+      # Print Action output for debugging
+      - name: Print Action result
+        run: |
+          echo "Result: ${{ steps.ai-agent.outputs.result }}"
+          if [ -z "${{ steps.ai-agent.outputs.result }}" ]; then
+            echo "Error: No output from Action"
+            exit 1
+          fi
+
+      # Verify license server connectivity
+      - name: Test license server
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+            -d '{"github_token": "${{ secrets.GITHUB_TOKEN }}", "repository": "${{ github.repository }}", "action_id": "ai-agent-action"}' \
+            https://ai-agent-license-server.onrender.com/validate || echo "License server test failed (expected for unlicensed)"
+
+      # Debug environment variables
+      - name: Debug environment
+        if: failure()  # Run only on failure for debugging
+        run: |
+          env | sort
+          echo "Action inputs: ${{ toJson(inputs) }}"
+          echo "Action outputs: ${{ toJson(steps.ai-agent.outputs) }}"
