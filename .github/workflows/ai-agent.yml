@@ -1,25 +1,35 @@
-name: AI Agent Workflow
-on:
-  push:
-    branches:
-      - main
-jobs:
-  run-ai-agent:
-    runs-on: ubuntu-latest
-    env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      AGENT_NAME: MyAIAgent
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      AGENT_LOG_LEVEL: DEBUG
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install python-dotenv
-      - name: Run AI Agent
-        run: python ai_agent_sdk.py
+name: 'AI Agent Action'
+description: 'Run an AI-powered task automation agent in your GitHub Actions workflow'
+inputs:
+  task-input:
+    description: 'JSON string defining the task to execute (e.g., {"input": "Hello"})'
+    required: false
+    default: '{}'
+  task-file:
+    description: 'Path to a JSON file containing the task definition'
+    required: false
+  openai-api-key:
+    description: 'OpenAI API key for AI processing'
+    required: true
+  agent-name:
+    description: 'Name of the AI agent'
+    required: true
+    default: 'AIAgent'
+  log-level:
+    description: 'Logging level (DEBUG, INFO, WARNING, ERROR)'
+    required: false
+    default: 'INFO'
+outputs:
+  result:
+    description: 'JSON string containing the task execution result'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  env:
+    OPENAI_API_KEY: ${{ inputs.openai-api-key }}
+    AGENT_NAME: ${{ inputs.agent-name }}
+    GITHUB_TOKEN: ${{ github.token }}
+    AGENT_LOG_LEVEL: ${{ inputs.log-level }}
+    TASK_INPUT: ${{ inputs.task-input }}
+    TASK_FILE: ${{ inputs.task-file }}
+    GITHUB_REPOSITORY_VISIBILITY: ${{ github.event.repository.visibility }}
