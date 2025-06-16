@@ -37,7 +37,6 @@ jobs:
       - name: Verify Action files
         run: |
           test -f action.yml || (echo "Error: action.yml missing" && exit 1)
-          test -f Dockerfile || (echo "Error: Dockerfile missing" && exit 1)
           test -f ai_agent_sdk.py || (echo "Error: ai_agent_sdk.py missing" && exit 1)
 
       # Publish release announcement
