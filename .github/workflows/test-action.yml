@@ -1,16 +1,23 @@
 name: Test AI Agent Action
-on: push
+on:
+  push:
+    branches:
+      - main
+      - develop
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Run AI Agent
         uses: ./
         with:
           task-input: '{"input": "Test task"}'
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           agent-name: TestAgent
+          log-level: INFO
         id: ai-agent
       - name: Print Result
         run: echo "Result: ${{ steps.ai-agent.outputs.result }}"
