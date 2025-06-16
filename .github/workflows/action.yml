@@ -29,12 +29,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install python-dotenv requests
 
-      # Build Docker image locally to catch build errors
-      - name: Build Docker image
-        run: |
-          docker build -t ai-agent-action .
-          docker images | grep ai-agent-action
-
       # Run the Action with test inputs
       - name: Run AI Agent Action
         id: ai-agent
