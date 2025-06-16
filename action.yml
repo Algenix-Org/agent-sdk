@@ -1,0 +1,39 @@
+name: AI Agent Action
+description: Run an AI-powered task automation agent in your GitHub Actions workflow
+author: Your Name or Organization
+branding:
+  icon: cpu
+  color: blue
+inputs:
+  task-input:
+    description: JSON string defining the task to execute (e.g., {"input": "Hello"})
+    required: false
+    default: '{}'
+  task-file:
+    description: Path to a JSON file containing the task definition
+    required: false
+  openai-api-key:
+    description: OpenAI API key for AI processing
+    required: true
+  agent-name:
+    description: Name of the AI agent
+    required: false
+    default: AIAgent
+  log-level:
+    description: Logging level (DEBUG, INFO, WARNING, ERROR)
+    required: false
+    default: INFO
+outputs:
+  result:
+    description: JSON string containing the task execution result
+    value: ${{ steps.ai-agent.outputs.result }}
+runs:
+  using: composite
+  steps:
+    - name: Checkout action code
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ github.repository }}
+        path: .github/actions/ai-agent
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
