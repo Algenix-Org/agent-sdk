@@ -1,7 +1,3 @@
-Here's a **refined and professional version** of your **AI Agent Action** documentation, suitable for a GitHub Marketplace listing or a public repository README:
-
----
-
 # 🤖 AI Agent Action
 
 A **GitHub Action** for running AI-powered task automation within your workflows.
