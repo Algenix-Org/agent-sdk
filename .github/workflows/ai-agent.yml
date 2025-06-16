@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       task-input:
-        description: JSON string defining the task to execute (e.g., {"input": "Hello"})
+        description: 'JSON string defining the task to execute (e.g., {"input": "Hello"})'
         required: false
         default: '{}'
       task-file:
@@ -29,7 +29,7 @@ on:
 
 inputs:
   task-input:
-    description: JSON string defining the task to execute (e.g., {"input": "Hello"})
+    description: 'JSON string defining the task to execute (e.g., {"input": "Hello"})'
     required: false
     default: '{}'
   task-file:
@@ -61,4 +61,5 @@ runs:
     AGENT_LOG_LEVEL: ${{ inputs.log-level }}
     TASK_INPUT: ${{ inputs.task-input }}
     TASK_FILE: ${{ inputs.task-file }}
+    GITHUB_REPOSITORY_VISIBILITY: ${{ github.event.repository.visibility }}
     GITHUB_REPOSITORY_VISIBILITY: ${{ github.event.repository.visibility }}
