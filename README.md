@@ -1,103 +1,57 @@
+Here's a **refined and professional version** of your **AI Agent Action** documentation, suitable for a GitHub Marketplace listing or a public repository README:
+
 ---
 
-# 🧠 AI Agent SDK
+# 🤖 AI Agent Action
 
-A Python-based Software Development Kit (SDK) for creating AI agents that integrate seamlessly with **GitHub Actions** and support **local development** using `.env` files.
+A **GitHub Action** for running AI-powered task automation within your workflows.
+
+* ✅ **Free** for public repositories
+* 💼 **Premium** plan coming for private repositories
 
 ---
 
 ## ✨ Features
 
-* 🔐 Secure handling of environment variables
-* 📋 Support for required and optional config variables
-* 🧱 Extensible base class for custom AI agents
-* 🧾 Built-in logging with configurable log levels
-* ✅ Compatible with GitHub Actions workflows
-* 💻 Easy local development with `.env` support
+* ⚙️ AI-driven task execution via OpenAI or custom models
+* 🔐 Secure environment variable handling (`OPENAI_API_KEY`, `GITHUB_TOKEN`)
+* 🆓 Free tier for public repositories
+* 🚀 Extensible with custom agents via built-in SDK
+* 🔧 Supports JSON input directly or via file
+* 📈 Ideal for automating repetitive workflows with intelligence
 
 ---
 
-## 🛠️ Prerequisites
+## 💰 Pricing
 
-* Python **3.9** or higher
-* [`python-dotenv`](https://pypi.org/project/python-dotenv/) (for local development)
-* GitHub repository (for CI/CD integration)
+| Plan             | Description                                     | Cost                          |
+| ---------------- | ----------------------------------------------- | ----------------------------- |
+| **Free Tier**    | Unlimited use in public repositories            | **Free**                      |
+| **Premium Tier** | Use in private repositories + advanced features | **\$5/month** *(Coming Soon)* |
 
-### Required Environment Variables
-
-| Variable         | Description                             |
-| ---------------- | --------------------------------------- |
-| `OPENAI_API_KEY` | API key for the AI model (e.g., OpenAI) |
-| `AGENT_NAME`     | Unique identifier for the AI agent      |
-| `GITHUB_TOKEN`   | GitHub token for repository access      |
+> 💡 *Premium version will be available on GitHub Marketplace.*
 
 ---
 
-## 📦 Installation
+## 🔧 Installation
 
-```bash
-git clone <repository-url>
-cd <repository-directory>
-pip install python-dotenv
-```
+Add the action to your GitHub Actions workflow (see below).
 
-### (Optional) Create a `.env` file for local development
+---
 
-```env
-OPENAI_API_KEY=your_openai_key
-AGENT_NAME=MyAIAgent
-GITHUB_TOKEN=your_github_token
-AGENT_LOG_LEVEL=DEBUG
-MAX_RETRIES=3
-TIMEOUT_SECONDS=30
-```
+## 🧱 Prerequisites
+
+* A GitHub repository with Actions enabled
+* GitHub Secret: `OPENAI_API_KEY`
 
 ---
 
 ## 🚀 Usage
 
-### 🔧 Local Development
-
-Ensure the `.env` file is properly configured. Then, run:
-
-```bash
-python ai_agent_sdk.py
-```
-
-### 🧪 Example Usage in Python
-
-```python
-from ai_agent_sdk import SampleAIAgent
-
-agent = SampleAIAgent(config_path='.env')
-
-task = {
-    'input': 'Hello, AI Agent!'
-}
-
-result = agent.execute_task(task)
-print(result)
-```
-
-#### ✅ Expected Output
-
-```json
-{
-  "status": "success",
-  "agent_name": "MyAIAgent",
-  "processed_data": "Processed: Hello, AI Agent!",
-  "github_token_used": true
-}
-```
-
----
-
-## 🛠 GitHub Actions Integration
-
-### 🧬 Example Workflow (`.github/workflows/ai-agent.yml`)
+### 📂 Example Workflow: `.github/workflows/ai-agent.yml`
 
 ```yaml
-name: AI Agent Workflow
+name: Run AI Agent
 
 on:
   push:
@@ -105,101 +59,83 @@ on:
       - main
 
 jobs:
-  run-ai-agent:
+  ai-agent:
     runs-on: ubuntu-latest
-    env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      AGENT_NAME: MyAIAgent
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      AGENT_LOG_LEVEL: DEBUG
-
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Run AI Agent Action
+        uses: your-username/your-repo@v1
         with:
-          python-version: '3.9'
+          task-input: '{"input": "Hello, AI Agent!"}'
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          agent-name: MyAIAgent
+          log-level: DEBUG
+        id: ai-agent
 
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install python-dotenv
-
-      - name: Run AI Agent
-        run: python ai_agent_sdk.py
+      - name: Print Result
+        run: echo "Result: ${{ steps.ai-agent.outputs.result }}"
 ```
-
-### 🔐 Adding GitHub Secrets
-
-1. Go to your repository on GitHub.
-2. Navigate to: **Settings → Secrets and variables → Actions → Secrets**
-3. Add the required secrets:
-
-   * `OPENAI_API_KEY`
-   * `GITHUB_TOKEN`
 
 ---
 
 ## ⚙️ Configuration
 
-| Variable          | Required | Default | Description                            |
-| ----------------- | -------- | ------- | -------------------------------------- |
-| `OPENAI_API_KEY`  | ✅        | —       | API key for AI integration             |
-| `AGENT_NAME`      | ✅        | —       | Unique agent name                      |
-| `GITHUB_TOKEN`    | ✅        | —       | GitHub repository access token         |
-| `AGENT_LOG_LEVEL` | ❌        | INFO    | Log level: DEBUG, INFO, WARNING, ERROR |
-| `MAX_RETRIES`     | ❌        | 3       | Max retry attempts                     |
-| `TIMEOUT_SECONDS` | ❌        | 30      | Timeout for tasks in seconds           |
+### 🔐 Required Inputs
+
+| Input            | Description                        |
+| ---------------- | ---------------------------------- |
+| `openai-api-key` | Your OpenAI API key (`secrets`)    |
+| `agent-name`     | Unique name for the agent instance |
+
+### 🧩 Optional Inputs
+
+| Input        | Description                                             | Default |
+| ------------ | ------------------------------------------------------- | ------- |
+| `task-input` | JSON-formatted task input                               | `{}`    |
+| `task-file`  | Path to a JSON file containing the task definition      | —       |
+| `log-level`  | Logging verbosity (`DEBUG`, `INFO`, `WARNING`, `ERROR`) | `INFO`  |
 
 ---
 
-## 🧩 Extending the SDK
+## 🧠 Extending the SDK
 
-Create your own custom AI agent by subclassing `AIAgentSDK`:
+Want to go further?
+Build custom agents by subclassing `AIAgentSDK` — full source available in this repository.
+
+Example:
 
 ```python
 from ai_agent_sdk import AIAgentSDK
-from typing import Dict, Any
 
-class CustomAIAgent(AIAgentSDK):
-    def execute_task(self, task: Dict[str, Any]) -> Dict[str, Any]:
+class MyCustomAgent(AIAgentSDK):
+    def execute_task(self, task):
         return {
             'status': 'success',
-            'result': f"Custom processing of {task.get('input')}"
+            'result': f"Custom result for input: {task.get('input')}"
         }
 ```
 
 ---
 
-## 📋 Logging
+## 🛍️ GitHub Marketplace
 
-Uses Python's built-in `logging` module. The log level is set via `AGENT_LOG_LEVEL`. All logs are printed to stdout and viewable in local terminal or GitHub Actions logs.
+**Coming Soon**
 
----
-
-## ❗ Error Handling
-
-* If any required environment variable is missing, the SDK raises an `EnvironmentError`.
-* Task-related errors are caught and returned with:
-
-```json
-{
-  "status": "error",
-  "message": "Detailed error message here"
-}
-```
+* Free for public repositories
+* \$5/month per private repo
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome!
-Submit a pull request or open an issue for bugs or feature suggestions.
+Bug reports, ideas, or pull requests are welcome!
+Submit an issue or PR on GitHub.
 
 ---
 
 ## 📄 License
 
 MIT License
+
 ---
