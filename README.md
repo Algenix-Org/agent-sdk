@@ -201,6 +201,5 @@ Submit a pull request or open an issue for bugs or feature suggestions.
 
 ## 📄 License
 
-MIT License © \[Your Name or Organization]
-
+MIT License
 ---
