@@ -1,30 +1,59 @@
-name: 'AI Agent Action'
-description: 'Run an AI-powered task automation agent in your GitHub Actions workflow'
+name: AI Agent Action
+description: Run an AI-powered task automation agent in your GitHub Actions workflow
+on:
+  workflow_dispatch:
+    inputs:
+      task-input:
+        description: JSON string defining the task to execute (e.g., {"input": "Hello"})
+        required: false
+        default: '{}'
+      task-file:
+        description: Path to a JSON file containing the task definition
+        required: false
+      agent-name:
+        description: Name of the AI agent
+        required: false
+        default: AIAgent
+      log-level:
+        description: Logging level (DEBUG, INFO, WARNING, ERROR)
+        required: false
+        default: INFO
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
 inputs:
   task-input:
-    description: 'JSON string defining the task to execute (e.g., {"input": "Hello"})'
+    description: JSON string defining the task to execute (e.g., {"input": "Hello"})
     required: false
     default: '{}'
   task-file:
-    description: 'Path to a JSON file containing the task definition'
+    description: Path to a JSON file containing the task definition
     required: false
   openai-api-key:
-    description: 'OpenAI API key for AI processing'
+    description: OpenAI API key for AI processing
     required: true
   agent-name:
-    description: 'Name of the AI agent'
-    required: true
-    default: 'AIAgent'
-  log-level:
-    description: 'Logging level (DEBUG, INFO, WARNING, ERROR)'
+    description: Name of the AI agent
     required: false
-    default: 'INFO'
+    default: AIAgent
+  log-level:
+    description: Logging level (DEBUG, INFO, WARNING, ERROR)
+    required: false
+    default: INFO
+
 outputs:
   result:
-    description: 'JSON string containing the task execution result'
+    description: JSON string containing the task execution result
+
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
+  using: docker
+  image: Dockerfile
   env:
     OPENAI_API_KEY: ${{ inputs.openai-api-key }}
     AGENT_NAME: ${{ inputs.agent-name }}
