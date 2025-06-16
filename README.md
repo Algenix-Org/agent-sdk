@@ -1,5 +1,3 @@
-Here's a **fixed and polished version** of your documentation for the **AI Agent SDK**, formatted professionally and with clarity improvements for readability, consistency, and developer usability:
-
 ---
 
 # 🧠 AI Agent SDK
