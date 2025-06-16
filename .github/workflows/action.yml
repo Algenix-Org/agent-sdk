@@ -1,66 +1,55 @@
-name: Test AI Agent Action
+name: Publish AI Agent Action
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:  # Allow manual trigger for debugging
+  release:
+    types: [published]
+  workflow_dispatch:
 
 jobs:
-  test:
+  publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      # Checkout the repository
       - name: Checkout code
-        uses: actions/checkout@v4  # Updated to latest version
-
-      # Set up Python (for local testing if needed)
-      - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/checkout@v4
         with:
-          python-version: '3.9'
+          fetch-depth: 0
+          ref: ${{ github.event.release.tag_name }}
 
-      # Install dependencies for local testing
-      - name: Install dependencies
+      - name: Debug directory contents
         run: |
-          python -m pip install --upgrade pip
-          pip install python-dotenv requests
+          ls -la
+          pwd
 
-      # Run the Action with test inputs
-      - name: Run AI Agent Action
-        id: ai-agent
-        uses: ./
-        with:
-          task-input: '{"input": "Test task"}'
-          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
-          agent-name: TestAgent
-          log-level: DEBUG
-        env:
-          GITHUB_REPOSITORY_VISIBILITY: public  # Simulate public repo for free tier
-
-      # Print Action output for debugging
-      - name: Print Action result
+      - name: Configure Git
         run: |
-          echo "Result: ${{ steps.ai-agent.outputs.result }}"
-          if [ -z "${{ steps.ai-agent.outputs.result }}" ]; then
-            echo "Error: No output from Action"
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Validate release tag
+        run: |
+          if [[ "${{ github.event.release.tag_name }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Valid tag: ${{ github.event.release.tag_name }}"
+          else
+            echo "Error: Tag must follow format vX.Y.Z (e.g., v1.0.0)"
             exit 1
           fi
 
-      # Verify license server connectivity
-      - name: Test license server
+      - name: Verify Action files
         run: |
-          curl -X POST -H "Content-Type: application/json" \
-            -d '{"github_token": "${{ secrets.GITHUB_TOKEN }}", "repository": "${{ github.repository }}", "action_id": "ai-agent-action"}' \
-            https://ai-agent-license-server.onrender.com/validate || echo "License server test failed (expected for unlicensed)"
+          test -f action.yml || (echo "Error: action.yml missing" && exit 1)
+          test -f ai_agent_sdk.py || (echo "Error: ai_agent_sdk.py missing" && exit 1)
 
-      # Debug environment variables
-      - name: Debug environment
-        if: failure()  # Run only on failure for debugging
+      - name: Announce release
         run: |
-          env | sort
-          echo "Action inputs: ${{ toJson(inputs) }}"
-          echo "Action outputs: ${{ toJson(steps.ai-agent.outputs) }}"
+          echo "Published AI Agent Action ${{ github.event.release.tag_name }}"
+          echo "Release notes: ${{ github.event.release.body }}"
+          echo "Action available at: https://github.com/${{ github.repository }}/releases/tag/${{ github.event.release.tag_name }}"
+
+      - name: Debug release
+        if: failure()
+        run: |
+          echo "Release event: ${{ toJson(github.event.release) }}"
+          git tag --list
+          git log -1 --pretty=%B
