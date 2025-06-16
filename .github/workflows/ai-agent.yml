@@ -62,4 +62,3 @@ runs:
     TASK_INPUT: ${{ inputs.task-input }}
     TASK_FILE: ${{ inputs.task-file }}
     GITHUB_REPOSITORY_VISIBILITY: ${{ github.event.repository.visibility }}
-    GITHUB_REPOSITORY_VISIBILITY: ${{ github.event.repository.visibility }}
