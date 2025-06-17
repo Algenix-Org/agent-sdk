@@ -4,7 +4,7 @@ import logging
 from typing import Dict, Any, Optional
 from dotenv import load_dotenv
 from pathlib import Path
-import requests import get, post
+import requests 
 
 __version__ = "0.1.0"
 
@@ -42,6 +42,8 @@ class AIAgentSDK:
         self._validate_config()
         self._setup_logging()
         self.is_licensed = self._check_license()
+        self._requests.get = self._requests.get()
+       self._requests.post = self_requests.post()
         
     def _load_config(self) -> Dict[str, Any]:
         """Load configuration from environment variables."""
