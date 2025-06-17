@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 import requests 
 
-__version__ = "0.1.0"
+__version__ = "v0.1.0"
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
