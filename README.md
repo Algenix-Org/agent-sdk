@@ -139,5 +139,5 @@ MIT License
 ## Roadmap
 
 - [ ] Deploy on Web
-- [ ] FOSS
+- [x] FOSS
 - [ ] Release for Github Marketplace
