@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 class AIAgentSDK:
     """SDK for AI-powered task automation in GitHub Actions."""
-    
-    def __init__(self, config_path: Optional[str] = None):
+  
+def __init__(self, config_path: Optional[str] = None):
     """
     Initialize the AI Agent SDK.
     
@@ -30,6 +30,19 @@ class AIAgentSDK:
         'AGENT_NAME',
         'GITHUB_TOKEN'
     ]
+    
+    self.default_env_vars = {
+        'AGENT_LOG_LEVEL': 'INFO',
+        'MAX_RETRIES': '3',
+        'TIMEOUT_SECONDS': '30',
+        'LICENSE_SERVER': 'https://your-license-server.com/validate'
+    }
+    
+    self.config = self._load_config()
+    self._validate_config()
+    self._setup_logging()
+    self.is_licensed = self._check_license()
+
     
     self.default_env_vars = {
         'AGENT_LOG_LEVEL': 'INFO',
