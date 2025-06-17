@@ -16,35 +16,33 @@ class AIAgentSDK:
     """SDK for AI-powered task automation in GitHub Actions."""
     
     def __init__(self, config_path: Optional[str] = None):
-        """
-        Initialize the AI Agent SDK.
+    """
+    Initialize the AI Agent SDK.
+    
+    Args:
+        config_path: Optional path to .env file for local development
+    """
+    if config_path:
+        load_dotenv(config_path)
         
-        Args:
-            config_path: Optional path to .env file for local development
-        """
-        if config_path:
-            load_dotenv(config_path)
-            
-        self.required_env_vars = [
-            'OPENAI_API_KEY',
-            'AGENT_NAME',
-            'GITHUB_TOKEN'
-        ]
-        
-        self.default_env_vars = {
-            'AGENT_LOG_LEVEL': 'INFO',
-            'MAX_RETRIES': '3',
-            'TIMEOUT_SECONDS': '30',
-            'LICENSE_SERVER': 'https://your-license-server.com/validate'  # Placeholder for paid tier validation
-        }
-        
-        self.config = self._load_config()
-        self._validate_config()
-        self._setup_logging()
-        self.is_licensed = self._check_license()
-        self._requests.get = self._requests.get()
-       self._requests.post = self_requests.post()
-        
+    self.required_env_vars = [
+        'OPENAI_API_KEY',
+        'AGENT_NAME',
+        'GITHUB_TOKEN'
+    ]
+    
+    self.default_env_vars = {
+        'AGENT_LOG_LEVEL': 'INFO',
+        'MAX_RETRIES': '3',
+        'TIMEOUT_SECONDS': '30',
+        'LICENSE_SERVER': 'https://your-license-server.com/validate'  # Placeholder for paid tier validation
+    }
+    
+    self.config = self._load_config()
+    self._validate_config()
+    self._setup_logging()
+    self.is_licensed = self._check_license()
+
     def _load_config(self) -> Dict[str, Any]:
         """Load configuration from environment variables."""
         config = {}
