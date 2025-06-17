@@ -1,107 +1,130 @@
 import os
-import json
-import logging
 from typing import Dict, Any, Optional
+from abc import ABC, abstractmethod
+import logging
 from dotenv import load_dotenv
-from pathlib import Path
-import requests 
-
-__version__ = "v1.0.0"
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class AIAgentSDK:
-    """SDK for AI-powered task automation in GitHub Actions."""
-  
-def __init__(self, config_path: Optional[str] = None):
-    """
-    Initialize the AI Agent SDK.
+class AIAgentSDK(ABC):
+    """Base SDK for creating AI agents compatible with GitHub Actions environment variables."""
     
-    Args:
-        config_path: Optional path to .env file for local development
-    """
-    if config_path:
-        load_dotenv(config_path)
+    def __init__(self, config_path: Optional[str] = None):
+        """
+        Initialize the AI Agent SDK with environment variable support.
         
-    self.required_env_vars = [
-        'OPENAI_API_KEY',
-        'AGENT_NAME',
-        'GITHUB_TOKEN'
-    ]
-    
-    self.default_env_vars = {
-        'AGENT_LOG_LEVEL': 'INFO',
-        'MAX_RETRIES': '3',
-        'TIMEOUT_SECONDS': '30',
-        'LICENSE_SERVER': 'https://your-license-server.com/validate'
-    }
-    
-    self.config = self._load_config()
-    self._validate_config()
-    self._setup_logging()
-    self.is_licensed = self._check_license()
-
-    
-    self.default_env_vars = {
-        'AGENT_LOG_LEVEL': 'INFO',
-        'MAX_RETRIES': '3',
-        'TIMEOUT_SECONDS': '30',
-        'LICENSE_SERVER': 'https://your-license-server.com/validate'  # Placeholder for paid tier validation
-    }
-    
-    self.config = self._load_config()
-    self._validate_config()
-    self._setup_logging()
-    self.is_licensed = self._check_license()
-
+        Args:
+            config_path: Optional path to .env file for local development
+        """
+        # Load .env file if provided (useful for local development)
+        if config_path:
+            load_dotenv(config_path)
+            
+        # Required environment variables
+        self.required_env_vars = [
+            'OPENAI_API_KEY',  # Example for OpenAI integration
+            'AGENT_NAME',      # Custom agent identifier
+            'GITHUB_TOKEN'     # GitHub token for repository access
+        ]
+        
+        # Optional environment variables with defaults
+        self.default_env_vars = {
+            'AGENT_LOG_LEVEL': 'INFO',
+            'MAX_RETRIES': '3',
+            'TIMEOUT_SECONDS': '30'
+        }
+        
+        self.config = self._load_config()
+        self._validate_config()
+        self._setup_logging()
+        
     def _load_config(self) -> Dict[str, Any]:
         """Load configuration from environment variables."""
         config = {}
+        
+        # Load required environment variables
         for var in self.required_env_vars:
-            config[var] = os.getenv(var)
+            value = os.getenv(var)
+            if value is None:
+                logger.warning(f"Environment variable {var} not found")
+            config[var] = value
+            
+        # Load optional environment variables with defaults
         for var, default in self.default_env_vars.items():
             config[var] = os.getenv(var, default)
+            
         return config
     
     def _validate_config(self) -> None:
         """Validate required environment variables."""
         missing_vars = [var for var in self.required_env_vars if not self.config.get(var)]
         if missing_vars:
-            raise EnvironmentError(f"Missing required environment variables: {', '.join(missing_vars)}")
+            raise EnvironmentError(
+                f"Missing required environment variables: {', '.join(missing_vars)}"
+            )
             
     def _setup_logging(self) -> None:
         """Configure logging based on environment variable."""
         log_level = getattr(logging, self.config['AGENT_LOG_LEVEL'].upper(), logging.INFO)
         logger.setLevel(log_level)
         
-    def _check_license(self) -> bool:
-        """
-        Check if the Action is licensed for private repos.
-        For free tier, allow public repos only.
-        """
-        repo_visibility = os.getenv('GITHUB_REPOSITORY_VISIBILITY', 'public')
-        if repo_visibility == 'public':
-            return True  # Free tier for public repos
-        try:
-            response = requests.post(
-                self.config['LICENSE_SERVER'],
-                json={'github_token': self.config['GITHUB_TOKEN'], 'repo': os.getenv('GITHUB_REPOSITORY')},
-                timeout=5
-            )
-            return response.json().get('licensed', False)
-        except Exception as e:
-            logger.warning(f"License check failed: {str(e)}. Defaulting to free tier.")
-            return False
-    
     def get_config(self, key: str) -> Any:
-        """Get configuration value by key."""
+        """
+        Get configuration value by key.
+        
+        Args:
+            key: Configuration key to retrieve
+            
+        Returns:
+            Configuration value
+        """
         return self.config.get(key)
+    
+    @abstractmethod
+    def execute_task(self, task: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Abstract method to execute an AI agent task.
+        
+        Args:
+            task: Task definition dictionary
+            
+        Returns:
+            Task execution results
+        """
+        pass
+    
+    def safe_get_env(self, key: str, default: Any = None) -> Any:
+        """
+        Safely retrieve environment variable with fallback.
+        
+        Args:
+            key: Environment variable key
+            default: Default value if key not found
+            
+        Returns:
+            Environment variable value or default
+        """
+        return os.getenv(key, default)
+    
+    def update_config(self, key: str, value: Any) -> None:
+        """
+        Update configuration value.
+        
+        Args:
+            key: Configuration key to update
+            value: New value
+        """
+        self.config[key] = value
+        logger.info(f"Updated configuration: {key}")
+
+class SampleAIAgent(AIAgentSDK):
+    """Sample implementation of an AI agent using the SDK."""
     
     def execute_task(self, task: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Execute an AI task.
+        Execute a sample AI task.
         
         Args:
             task: Task definition dictionary with 'input' key
@@ -109,51 +132,44 @@ def __init__(self, config_path: Optional[str] = None):
         Returns:
             Task execution results
         """
-        if not self.is_licensed and os.getenv('GITHUB_REPOSITORY_VISIBILITY') == 'private':
-            return {
-                'status': 'error',
-                'error_message': 'Paid license required for private repositories'
-            }
-        
         try:
+            # Sample task execution
             input_data = task.get('input', '')
             agent_name = self.get_config('AGENT_NAME')
+            
+            # Simulate AI processing
             result = {
                 'status': 'success',
                 'agent_name': agent_name,
                 'processed_data': f"Processed: {input_data}",
-                'github_token_used': len(self.config['GITHUB_TOKEN']) > 0,
-                'license_status': 'premium' if self.is_licensed else 'free'
+                'github_token_used': len(self.get_config('GITHUB_TOKEN')) > 0
             }
+            
             logger.info(f"Task executed successfully by {agent_name}")
             return result
+            
         except Exception as e:
             logger.error(f"Task execution failed: {str(e)}")
             return {
                 'status': 'error',
                 'error_message': str(e)
             }
-    
-    def safe_get_env(self, key: str, default: Any = None) -> Any:
-        """Safely retrieve environment variable with fallback."""
-        return os.getenv(key, default)
-
-def main():
-    """Entry point for CLI or GitHub Action execution."""
-    try:
-        agent = AIAgentSDK(config_path=os.getenv('CONFIG_PATH', '.env'))
-        task_input = os.getenv('TASK_INPUT', '{}')
-        task_file = os.getenv('TASK_FILE')
-        if task_file and Path(task_file).exists():
-            with open(task_file, 'r') as f:
-                task = json.load(f)
-        else:
-            task = json.loads(task_input)
-        result = agent.execute_task(task)
-        print(json.dumps(result))
-    except Exception as e:
-        logger.error(f"Agent initialization failed: {str(e)}")
-        print(json.dumps({'status': 'error', 'error_message': str(e)}))
 
 if __name__ == "__main__":
+    # Example usage
+    try:
+        # Initialize agent with optional .env file for local testing
+        agent = SampleAIAgent(config_path='.env')
+        
+        # Sample task
+        task = {
+            'input': 'Hello, AI Agent!'
+        }
+        
+        # Execute task
+        result = agent.execute_task(task)
+        print(result)
+        
+    except Exception as e:
+        logger.error(f"Agent initialization failed: {str(e)}")
     main()
