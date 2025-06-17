@@ -4,7 +4,7 @@ import logging
 from typing import Dict, Any, Optional
 from dotenv import load_dotenv
 from pathlib import Path
-import requests import http
+import requests import get, post
 
 __version__ = "0.1.0"
 
