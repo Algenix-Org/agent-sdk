@@ -172,4 +172,3 @@ if __name__ == "__main__":
         
     except Exception as e:
         logger.error(f"Agent initialization failed: {str(e)}")
-    main()
