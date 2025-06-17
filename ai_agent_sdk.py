@@ -27,13 +27,15 @@ class AIAgentSDK(ABC):
             'OPENAI_API_KEY',  # Example for OpenAI integration
             'AGENT_NAME',      # Custom agent identifier
             'GITHUB_TOKEN'     # GitHub token for repository access
+            'LICENSE_SERVER'
         ]
         
         # Optional environment variables with defaults
         self.default_env_vars = {
             'AGENT_LOG_LEVEL': 'INFO',
             'MAX_RETRIES': '3',
-            'TIMEOUT_SECONDS': '30'
+            'TIMEOUT_SECONDS': '30',
+            'LICENSE_SERVER':'https://ai-agent-license-server.onrender.com/validate'
         }
         
         self.config = self._load_config()
