@@ -135,3 +135,9 @@ Submit an issue or PR on GitHub.
 MIT License
 
 ---
+
+## Roadmap
+
+- [ ] Deploy on Web
+- [ ] FOSS
+- [ ] Release for Github Marketplace
