@@ -1,0 +1,46 @@
+name: AI Agent for Private Repo
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  ai-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch history for code diffs
+
+      - name: Get code diff
+        id: diff
+        run: |
+          git diff HEAD^ HEAD > diff.txt
+          echo "diff_file=diff.txt" >> $GITHUB_OUTPUT
+
+      - name: Run AI Agent Action
+        id: ai-agent
+        uses: ./  # Use local Action during testing; update to your-username/your-repo@v1 after release
+        with:
+          task-input: '{"task_type": "code_summary", "input": "'"$(cat ${{ steps.diff.outputs.diff_file }})"'"}'
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          agent-name: CodeSummarizer
+          log-level: DEBUG
+
+      - name: Print Result
+        run: |
+          echo "Result: ${{ steps.ai-agent.outputs.result }}"
+          if [ -z "${{ steps.ai-agent.outputs.result }}" ]; then
+            echo "Error: No output from Action"
+            exit 1
+          fi
+
+      - name: Debug failure
+        if: failure()
+        run: |
+          env | sort
+          echo "Action inputs: ${{ toJson(inputs) }}"
+          echo "Action outputs: ${{ toJson(steps.ai-agent.outputs) }}"
