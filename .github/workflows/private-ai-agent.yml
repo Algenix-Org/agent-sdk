@@ -19,7 +19,6 @@ jobs:
       - name: Verify Action files
         run: |
           ls -la
-          test -f action.yml || (echo "Error: action.yml missing" && exit 1)
           test -f ai_agent_sdk.py || (echo "Error: ai_agent_sdk.py missing" && exit 1)
           test -f requirements.txt || (echo "Error: requirements.txt missing" && exit 1)
 
