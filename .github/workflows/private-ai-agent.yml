@@ -16,9 +16,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch history for code diffs
+          fetch-depth: 0
           ref: ${{ github.ref }}
-          
+
       - name: Get code diff
         id: diff
         run: |
@@ -38,7 +38,7 @@ jobs:
           task-input: ${{ steps.prepare-task.outputs.task_input }}
           agent-name: CodeSummarizer
           log-level: DEBUG
-      
+
       - name: Print Result
         run: |
           echo "Result: ${{ steps.ai-agent.outputs.result }}"
@@ -54,3 +54,9 @@ jobs:
           echo "Action inputs: ${{ toJson(inputs) }}"
           echo "Action outputs: ${{ toJson(steps.ai-agent.outputs) }}"
           ls -la
+
+      - name: Ignore certain files from triggering
+        run: |
+          echo "::add-mask::actions.yml"
+          echo "::add-mask::Dockerfile"
+          echo "::add-mask::.github/actions"

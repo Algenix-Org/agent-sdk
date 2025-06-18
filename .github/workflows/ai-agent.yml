@@ -7,10 +7,12 @@ jobs:
   run-ai-agent:
     runs-on: ubuntu-latest
     env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       AGENT_NAME: MyAIAgent
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       AGENT_LOG_LEVEL: DEBUG
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
