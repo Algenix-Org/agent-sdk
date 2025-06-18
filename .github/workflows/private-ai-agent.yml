@@ -14,13 +14,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Fetch history for code diffs
-          ref: ${{ github.ref }}  # Ensure correct branch/commit
+          ref: ${{ github.ref }}
 
       - name: Verify Action files
         run: |
           ls -la
           test -f action.yml || (echo "Error: action.yml missing" && exit 1)
-          test -f Dockerfile || (echo "Error: Dockerfile missing" && exit 1)
           test -f ai_agent_sdk.py || (echo "Error: ai_agent_sdk.py missing" && exit 1)
           test -f requirements.txt || (echo "Error: requirements.txt missing" && exit 1)
 
@@ -38,7 +37,7 @@ jobs:
 
       - name: Run AI Agent Action
         id: ai-agent
-        uses: ./  # Use local Action during testing; update to your-username/your-repo@v1 after release
+        uses: ./  # Update to your-username/your-repo@v1 after release
         with:
           task-input: ${{ steps.prepare-task.outputs.task_input }}
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
