@@ -9,6 +9,9 @@ on:
 jobs:
   ai-agent:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -33,9 +36,10 @@ jobs:
         uses: ./  # Update to Algenix-Org/agent-sdk@v1 after release
         with:
           task-input: ${{ steps.prepare-task.outputs.task_input }}
-          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           agent-name: CodeSummarizer
           log-level: DEBUG
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Print Result
         run: |
