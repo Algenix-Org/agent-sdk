@@ -38,9 +38,7 @@ jobs:
           task-input: ${{ steps.prepare-task.outputs.task_input }}
           agent-name: CodeSummarizer
           log-level: DEBUG
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-
+      
       - name: Print Result
         run: |
           echo "Result: ${{ steps.ai-agent.outputs.result }}"
