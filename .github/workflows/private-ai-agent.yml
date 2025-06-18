@@ -21,11 +21,17 @@ jobs:
           git diff HEAD^ HEAD > diff.txt
           echo "diff_file=diff.txt" >> $GITHUB_OUTPUT
 
+      - name: Prepare task input
+        id: prepare-task
+        run: |
+          DIFF_CONTENT=$(cat ${{ steps.diff.outputs.diff_file }} | jq -sR .)
+          echo "task_input={\"task_type\": \"code_summary\", \"input\": $DIFF_CONTENT}" >> $GITHUB_OUTPUT
+
       - name: Run AI Agent Action
         id: ai-agent
         uses: ./  # Use local Action during testing; update to your-username/your-repo@v1 after release
         with:
-          task-input: '{"task_type": "code_summary", "input": "'"$(cat ${{ steps.diff.outputs.diff_file }})"'"}'
+          task-input: ${{ steps.prepare-task.outputs.task_input }}
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           agent-name: CodeSummarizer
           log-level: DEBUG
