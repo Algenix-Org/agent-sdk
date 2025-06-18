@@ -2,28 +2,25 @@ name: Publish AI Agent Action
 
 on:
   release:
-    types: [published]  # Trigger on published releases
-  workflow_dispatch:  # Allow manual trigger for testing
+    types: [published]
+  workflow_dispatch:
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Required for pushing tags
+      contents: write
     steps:
-      # Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch all tags for versioning
+          fetch-depth: 0
 
-      # Set up Git for tagging
       - name: Configure Git
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
-      # Validate release tag
       - name: Validate release tag
         run: |
           if [[ "${{ github.event.release.tag_name }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -33,24 +30,27 @@ jobs:
             exit 1
           fi
 
-      # Verify Action files
       - name: Verify Action files
         run: |
           test -f action.yml || (echo "Error: action.yml missing" && exit 1)
           test -f Dockerfile || (echo "Error: Dockerfile missing" && exit 1)
           test -f ai_agent_sdk.py || (echo "Error: ai_agent_sdk.py missing" && exit 1)
+          test -f requirements.txt || (echo "Error: requirements.txt missing" && exit 1)
 
-      # Publish release announcement
+      - name: Build Docker image
+        run: |
+          docker build -t ai-agent-action:${{ github.event.release.tag_name }} .
+          docker images | grep ai-agent-action
+
       - name: Announce release
         run: |
           echo "Published AI Agent Action ${{ github.event.release.tag_name }}"
           echo "Release notes: ${{ github.event.release.body }}"
           echo "Action available at: https://github.com/${{ github.repository }}/releases/tag/${{ github.event.release.tag_name }}"
 
-      # Debug release details
       - name: Debug release
         if: failure()
         run: |
           echo "Release event: ${{ toJson(github.event.release) }}"
           git tag --list
-          git log -1 --pretty=%B
+          docker images
