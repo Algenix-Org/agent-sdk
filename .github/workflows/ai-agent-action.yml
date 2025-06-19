@@ -1,5 +1,4 @@
 name: 'AI Agent Action'
-description: 'Run an AI agent using Python'
 on:
   workflow_dispatch:
     inputs:
