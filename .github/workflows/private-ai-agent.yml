@@ -57,6 +57,6 @@ jobs:
 
       - name: Ignore certain files from triggering
         run: |
-          echo "::add-mask::ai-agent-action.yml"
+          echo "::add-mask::action.yaml"
           echo "::add-mask::Dockerfile"
           echo "::add-mask::.github/actions"
