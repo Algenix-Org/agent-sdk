@@ -1,14 +1,22 @@
-name: 'Action'
-description: 
-runs:
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+name: 'AI Agent Action'
+description: 'Runs a Python AI agent with custom input.'
+inputs:
+  task-input:
+    description: 'The input for the AI agent'
+    required: true
+  agent-name:
+    description: 'The name of the agent'
+    required: false
+    default: 'default-agent'
+  log-level:
+    description: 'Logging level'
+    required: false
+    default: 'INFO'
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.task-input }}
+    - ${{ inputs.agent-name }}
+    - ${{ inputs.log-level }}

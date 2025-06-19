@@ -7,6 +7,7 @@ import os
 import logging
 import hmac
 import hashlib
+import sys
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -143,3 +144,10 @@ async def handle_marketplace_webhook(payload: dict, request: Request):
         conn.commit()
     
     return {"status": "success"}
+
+task_input = sys.argv[1]
+agent_name = sys.argv[2]
+log_level = sys.argv[3]
+
+print(f"Running agent '{agent_name}' with input '{task_input}' and log level '{log_level}'")
+# Your agent logic here
