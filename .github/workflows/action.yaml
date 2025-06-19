@@ -1,22 +1,28 @@
 name: 'AI Agent Action'
-description: 'Runs a Python AI agent with custom input.'
-inputs:
-  task-input:
-    description: 'The input for the AI agent'
-    required: true
-  agent-name:
-    description: 'The name of the agent'
-    required: false
-    default: 'default-agent'
-  log-level:
-    description: 'Logging level'
-    required: false
-    default: 'INFO'
+on:
+  workflow_dispatch:
+    inputs:
+      task-input:
+        description: 'The input for the AI agent'
+        required: true
+      agent-name:
+        description: 'The name of the agent'
+        required: false
+        default: 'default-agent'
+      log-level:
+        description: 'Logging level'
+        required: false
+        default: 'INFO'
 
-runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - ${{ inputs.task-input }}
-    - ${{ inputs.agent-name }}
-    - ${{ inputs.log-level }}
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run AI Agent
+        uses: docker://Dockerfile
+        with:
+          args: |
+            ${{ github.event.inputs.task-input }}
+            ${{ github.event.inputs.agent-name }}
+            ${{ github.event.inputs.log-level }}
