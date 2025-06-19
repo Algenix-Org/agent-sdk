@@ -32,7 +32,7 @@ jobs:
 
       - name: Verify Action files
         run: |
-          test -f action.yml || (echo "Error: action.yml missing" && exit 1)
+          test -f ai-agent-action.yml || (echo "Error: action.yml missing" && exit 1)
           test -f Dockerfile || (echo "Error: Dockerfile missing" && exit 1)
           test -f ai_agent_sdk.py || (echo "Error: ai_agent_sdk.py missing" && exit 1)
           test -f requirements.txt || (echo "Error: requirements.txt missing" && exit 1)
