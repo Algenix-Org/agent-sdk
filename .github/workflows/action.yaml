@@ -33,4 +33,4 @@ jobs:
 
       - name: Run AI Agent
         run: |
-          python agent_ai_sdk.py "${{ github.event.inputs.task-input }}" "${{ github.event.inputs.agent-name }}" "${{ github.event.inputs.log-level }}"
+          python ai_agent_sdk.py "${{ github.event.inputs.task-input }}" "${{ github.event.inputs.agent-name }}" "${{ github.event.inputs.log-level }}"
