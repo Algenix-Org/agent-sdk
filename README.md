@@ -1,5 +1,9 @@
 # 🤖 AI Agent Action
 
+[![AI Agent Action](https://github.com/Algenix-Org/agent-sdk/actions/workflows/action.yaml/badge.svg)](https://github.com/Algenix-Org/agent-sdk/actions/workflows/action.yaml)
+[![AI Agent Workflow](https://github.com/Algenix-Org/agent-sdk/actions/workflows/ai-agent.yml/badge.svg)](https://github.com/Algenix-Org/agent-sdk/actions/workflows/ai-agent.yml)
+
+
 A **GitHub Action** for running AI-powered task automation within your workflows.
 
 * ✅ **Free** for public repositories
