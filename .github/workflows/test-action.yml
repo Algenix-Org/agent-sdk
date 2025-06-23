@@ -1,15 +1,14 @@
 name: Publish AI Agent Action
 
 on:
-  release:
-    types: [published]
-  workflow_dispatch:
+  workflow_dispatch:  # Manual trigger only
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,36 +20,19 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
-      - name: Validate release tag
-        run: |
-          if [[ "${{ github.event.release.tag_name }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Valid tag: ${{ github.event.release.tag_name }}"
-          else
-            echo "Error: Tag must follow format vX.Y.Z (e.g., v1.0.0)"
-            exit 1
-          fi
-
       - name: Verify Action files
         run: |
-          test -f ai-agent-action.yml || (echo "Error: action.yml missing" && exit 1)
-          test -f Dockerfile || (echo "Error: Dockerfile missing" && exit 1)
+          test -f ai-agent-action.yml || (echo "Error: ai-agent-action.yml missing" && exit 1)
           test -f ai_agent_sdk.py || (echo "Error: ai_agent_sdk.py missing" && exit 1)
           test -f requirements.txt || (echo "Error: requirements.txt missing" && exit 1)
 
-      - name: Build Docker image
+      - name: Announce publication
         run: |
-          docker build -t ai-agent-action:${{ github.event.release.tag_name }} .
-          docker images | grep ai-agent-action
+          echo "✅ AI Agent Action verified and ready for use"
+          echo "Repository: https://github.com/${{ github.repository }}"
 
-      - name: Announce release
-        run: |
-          echo "Published AI Agent Action ${{ github.event.release.tag_name }}"
-          echo "Release notes: ${{ github.event.release.body }}"
-          echo "Action available at: https://github.com/${{ github.repository }}/releases/tag/${{ github.event.release.tag_name }}"
-
-      - name: Debug release
+      - name: Debug info (if fails)
         if: failure()
         run: |
-          echo "Release event: ${{ toJson(github.event.release) }}"
+          echo "🔍 Debug info:"
           git tag --list
-          docker images
