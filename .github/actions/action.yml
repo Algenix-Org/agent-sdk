@@ -1,0 +1,9 @@
+name: 'Run Agent SDK Task'
+description: 'Runs the agent_sdk with custom input'
+inputs:
+  task:
+    description: 'Task input for the agent'
+    required: true
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
