@@ -1,6 +1,5 @@
 # 🤖 AI Agent Action
 
-[![AI Agent Action](https://github.com/Algenix-Org/agent-sdk/blob/main/action.yaml/badge.svg)](https://github.com/Algenix-Org/agent-sdk/blob/main/action.yaml)
 [![GitHub release (latest Agent SDK)](https://img.shields.io/github/v/release/nhedger/agent-sdk?label=latest&logo=github&labelColor=374151&color=60a5fa)](https://github.com/marketplace/actions/ai-agent-action)
 [![AI Agent Workflow](https://github.com/Algenix-Org/agent-sdk/actions/workflows/ai-agent.yml/badge.svg)](https://github.com/Algenix-Org/agent-sdk/actions/workflows/ai-agent.yml)
 
