@@ -1,36 +1,50 @@
-name: 'AI Agent Action'
+name: AI Agent Action
+author: Algenix
+description: AI Agent action to run tasks inside GitHub Actions
+branding:
+  icon: globe
+  color: blue
 
-on:
-  workflow_dispatch:
-    inputs:
-      task-input:
-        description: 'The input for the AI agent'
-        required: true
-      agent-name:
-        description: 'The name of the agent'
-        required: false
-        default: 'default-agent'
-      log-level:
-        description: 'Logging level'
-        required: false
-        default: 'INFO'
+inputs:
+  task-input:
+    description: 'The input for the AI agent'
+    required: true
+  agent-name:
+    description: 'The name of the agent'
+    required: false
+    default: 'default-agent'
+  log-level:
+    description: 'Logging level'
+    required: false
+    default: 'INFO'
 
-jobs:
-  run-agent:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+outputs:
+  run_agent:
+    description: 'The output from running the AI agent'
+    value: ${{ steps.run_agent.outputs.output_from_agent }}
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          pip install --no-cache-dir -r requirements.txt
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
 
-      - name: Run AI Agent
-        run: |
-          python ai_agent_sdk.py "${{ github.event.inputs.task-input }}" "${{ github.event.inputs.agent-name }}" "${{ github.event.inputs.log-level }}"
+    - name: Install dependencies
+      run: |
+        pip install --no-cache-dir -r requirements.txt
+      shell: bash
+
+    - name: Run AI Agent
+      id: run_agent
+      run: |
+        python ai_agent_sdk.py "${{ inputs.task-input }}" "${{ inputs.agent-name }}" "${{ inputs.log-level }}"
+      shell: bash
+
+    - name: Set output
+      run: echo "run-agent=Output set by script (optional)" >> $GITHUB_OUTPUT
+      shell: bash
