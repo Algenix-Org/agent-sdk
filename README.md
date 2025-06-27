@@ -144,4 +144,4 @@ MIT License
 
 - [ ] Deploy on Web
 - [x] FOSS
-- [ ] Release for Github Marketplace
+- [x] Release for Github Marketplace
