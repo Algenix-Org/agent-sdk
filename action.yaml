@@ -2,8 +2,8 @@ name: AI Agent Action
 author: Algenix
 description: AI Agent action to run tasks inside GitHub Actions
 branding:
-  icon: globe
-  color: blue
+  icon: robot
+  color: black
 
 inputs:
   task-input:
