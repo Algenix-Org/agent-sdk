@@ -120,10 +120,8 @@ class MyCustomAgent(AIAgentSDK):
 
 ## 🛍️ GitHub Marketplace
 
-**Coming Soon**
-
-* Free for public repositories
-* \$5/month per private repo
+* Free for public repositories ✔️
+* \$5/month per private repo (soon)
 
 ---
 
@@ -139,7 +137,3 @@ Submit an issue or PR on GitHub.
 MIT License
 
 ---
-
-## Roadmap
-
-- [ ] Deploy on Web
